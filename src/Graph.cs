@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Boruvska;
+namespace Boruvka;
 
 public class Graph<Node> where Node: IEquatable<Node> {
     readonly List<Node> Nodes = new();
@@ -88,11 +88,11 @@ public class Graph<Node> where Node: IEquatable<Node> {
         this.Nodes.Remove(node);
     }
 
-    public bool HasNode(ref Node node) {
+    public bool HasNode(Node node) {
         return this.Nodes.Contains(node);
     }
 
-    public bool HasEdge(ref Node fst, ref Node snd) {
+    public bool HasEdge(Node fst, Node snd) {
         return this.Edges.ContainsKey(fst) && this.Edges[fst].Contains(snd);
     }
 }

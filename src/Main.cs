@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace Boruvska;
+namespace Boruvka;
 
 class Program {
     public static void Main() {
