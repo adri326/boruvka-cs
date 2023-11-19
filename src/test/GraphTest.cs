@@ -4,7 +4,7 @@ using NUnit.Framework.Internal;
 
 namespace Boruvka.Test;
 
-public class Tests {
+public class GraphTest {
     Randomizer rnd = new();
 
     [SetUp]

@@ -4,15 +4,19 @@ using Raylib_cs;
 namespace Boruvka;
 
 public class GraphPosition<Node> where Node: IEquatable<Node>, IComparable {
-    Graph<Node> Graph;
+    public Graph<Node> Graph;
     private readonly Dictionary<Node, Vector2> Positions;
     Random rng = new();
 
     public GraphPosition(Graph<Node> Graph) {
         this.Graph = Graph;
         this.Positions = new();
+        float distance = 3.0F * (float)Math.Sqrt(this.Graph.GetNodes().Count());
         foreach (var node in Graph.GetNodes()) {
-            this.Positions.Add(node, new((float)this.rng.NextDouble(), (float)this.rng.NextDouble()));
+            this.Positions.Add(node, new(
+                (float)this.rng.NextDouble() * distance - distance / 2.0F,
+                (float)this.rng.NextDouble() * distance - distance / 2.0F
+            ));
         }
     }
 
@@ -28,7 +32,7 @@ public class GraphPosition<Node> where Node: IEquatable<Node>, IComparable {
     }
 
     static private float RepulsiveForce(float distance) {
-        const float C = 1.6F;
+        const float C = 1.8F;
 
         if (distance <= 0.5F) distance = 0.5F;
         if (distance >= 10.0F) return 0.0F;
@@ -122,38 +126,7 @@ public class GraphPosition<Node> where Node: IEquatable<Node>, IComparable {
         }
     }
 
-    // TODO: move this to another class
-    public void Draw(int width, int height) {
-        // Normalize coordinates
-        float maxX = float.NegativeInfinity;
-        float minX = float.PositiveInfinity;
-        float maxY = float.NegativeInfinity;
-        float minY = float.PositiveInfinity;
-
-        foreach (Vector2 position in this.Positions.Values) {
-            maxX = Math.Max(position.X, maxX);
-            maxY = Math.Max(position.Y, maxY);
-            minX = Math.Min(position.X, minX);
-            minY = Math.Min(position.Y, minY);
-        }
-
-        float normalizeFactor = 0.9F * Math.Min(width / (maxX - minX), height / (maxY - minY));
-        Dictionary<Node, (Node node, Vector2)> normalizedPos = this.Positions.Select((node, index) => (
-            node.Key,
-            new Vector2(
-                node.Value.X * normalizeFactor + width / 2.0F,
-                node.Value.Y * normalizeFactor + height / 2.0F
-            )
-        )).ToDictionary(tuple => tuple.Item1);
-
-        foreach (var (fst, snd) in this.Graph.GetEdges()) {
-            var (_, fstPos) = normalizedPos[fst];
-            var (_, sndPos) = normalizedPos[snd];
-            Raylib.DrawLineV(fstPos, sndPos, Color.BEIGE);
-        }
-
-        foreach (var (node, (_, pos)) in normalizedPos) {
-            Raylib.DrawCircleV(pos, 5.0F, Color.GOLD);
-        }
+    public IEnumerable<(Node node, Vector2 pos)> GetPositions() {
+        return this.Positions.AsEnumerable().Select(pair => (pair.Key, pair.Value));
     }
 }
