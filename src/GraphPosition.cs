@@ -41,9 +41,10 @@ public class GraphPosition<Node> where Node: IEquatable<Node>, IComparable {
     }
 
     static private Vector2 Gravity(Vector2 position) {
+        const float G = 2.0E-4F;
         var distance = Distance(position, Vector2.Zero);
         var normalized = position / distance;
-        return -normalized * (float)Math.Sqrt(distance) * 0.001F;
+        return -normalized * (float)Math.Sqrt(distance) * G;
     }
 
     static private float Distance(Vector2 thisNode, Vector2 otherNode) {
