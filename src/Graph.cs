@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Boruvka;
 
-public class Graph<Node> where Node: IEquatable<Node> {
+public class Graph<Node> where Node: IEquatable<Node>, IComparable {
     readonly List<Node> Nodes = new();
 
     // Invariant 1: ∀(a, b) ∈ edges, a ∈ nodes && b ∈ nodes
@@ -60,8 +60,6 @@ public class Graph<Node> where Node: IEquatable<Node> {
     /// <summary>
     /// Removes the edge `(fst, snd)` from the graph. The nodes will still be in the graph.
     /// </summary>
-    /// <param name="fst"></param>
-    /// <param name="snd"></param>
     public void RemoveEdge(Node fst, Node snd) {
         this.RemoveDirectedEdge(fst, snd);
         this.RemoveDirectedEdge(snd, fst);
@@ -94,5 +92,27 @@ public class Graph<Node> where Node: IEquatable<Node> {
 
     public bool HasEdge(Node fst, Node snd) {
         return this.Edges.ContainsKey(fst) && this.Edges[fst].Contains(snd);
+    }
+
+    public IEnumerable<Node> GetNodes() {
+        return this.Nodes.AsEnumerable();
+    }
+
+    public IEnumerable<Node> GetEdgesOf(Node node) {
+        if (this.Edges.ContainsKey(node)) {
+            return this.Edges[node].AsEnumerable();
+        } else {
+            return Enumerable.Empty<Node>();
+        }
+    }
+
+    public IEnumerable<(Node, Node)> GetEdges() {
+        // Whyyyyy is it called SelectMany and not FlatMap (like in every other language)
+        // Also why can I not restrict Node in non-generic functions :(
+        return this.Edges
+            .SelectMany((pair) =>
+                pair.Value.Select(other => (pair.Key, other))
+            )
+            .Where<(Node fst, Node snd)>(pair => pair.fst.CompareTo(pair.snd) >= 0);
     }
 }

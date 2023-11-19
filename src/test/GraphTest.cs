@@ -89,4 +89,17 @@ public class Tests {
         Assert.IsTrue(g.HasNode(1));
         Assert.IsTrue(g.HasNode(2));
     }
+
+    [Test]
+    public void GetEdgesOf() {
+        Graph<int> g = new();
+        g.AddEdge(1, 2);
+        g.AddEdge(3, 1);
+
+        List<int> edges = g.GetEdgesOf(1).ToList();
+        edges.Sort();
+        Assert.AreEqual(edges, new List<int> { 2, 3 });
+
+        Assert.AreEqual(g.GetEdgesOf(0).ToList(), new List<int>());
+    }
 }
